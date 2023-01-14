@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String 
+  fname String? @db.VarChar(64)
+  lname String? @db.VarChar(64)
+  role Role @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  boards Board[]
+}
+
+model Board{
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  description String? @db.Text
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  tasks Task[]
+}
+
+model Task{
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(255)
+  description String? @db.Text
+  board Board @relation(fields: [boardId], references: [id])
+  boardId Int
+}
+
+enum Role {
+  USER
+  EDITOR
+  OWNER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// model Address {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   recipient String @db.VarChar(128)
+//   street String @db.VarChar(255)
+//   city String @db.VarChar(128)
+//   state String @db.VarChar(2)
+//   zip String @db.VarChar(10)
+//   is_to Boolean @default(false)
+// }
+
+// model Invoice{
+//   id Int @id @default(autoincrement())
+//   invoice_number String @db.VarChar(10)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   date_due DateTime @default(dbgenerated("NOW() + interval '2 weeks'"))
+//   description String @db.Text()
+//   archive_flag Boolean @default(false)
+//   paid_flag Boolean @default(false)
+// }
